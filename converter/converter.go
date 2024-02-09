@@ -109,7 +109,7 @@ func GetAppleMusicData(musicUserToken string, devToken string) map[string]map[st
 
 }
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Panic(err)
 	}

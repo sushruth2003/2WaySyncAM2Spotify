@@ -2,3 +2,6 @@
 env_variables/
 generate_token/
 lib.json
+.DS_Store
+
+```
