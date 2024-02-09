@@ -1,4 +1,4 @@
-module proj/hello
+module proj/sp2am
 
 go 1.21.6
 
