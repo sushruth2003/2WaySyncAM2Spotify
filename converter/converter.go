@@ -85,21 +85,40 @@ func GetAppleMusicData(musicUserToken string, devToken string) map[string]map[st
 	// 	log.Fatal(err)
 	// }
 	// fmt.Println(storefronts)
-	albums, _, err := client.Me.GetAllLibraryPlaylists(ctx, nil)
-	if err != nil {
-		log.Fatal(err)
+	// albums, _, err := client.Me.GetAllLibraryPlaylists(ctx, nil)
+	// if err != nil {
+	// 	log.Fatal(err)
 
-	}
-	for _, album := range albums.Data {
-		fmt.Println(album.Attributes.Name)
-	}
-	// fmt.Println(resp)
+	// }
+	// for _, album := range albums.Data {
+	// 	fmt.Println(album.Attributes.Name)
+	// }
+	// // fmt.Println(resp)
 	// fmt.Println(albums)
 	// client.
 	// fmt.Println(*client.Me)
 	lib := make(map[string]map[string]song_info)
-	// playlists, resp, err := client.Me.GetAllLibraryPlaylists(ctx, nil)
-
+	playlists, resp, err := client.Me.GetAllLibraryPlaylists(ctx, nil)
+	fmt.Println(playlists, resp, err)
+	// fmt.Printf("playlists: %T\n", playlists)
+	for _, playlist := range playlists.Data {
+		// fmt.Printf("playlist: %T\n", playlist)
+		fmt.Println(playlist.Id)
+		fmt.Println(playlist.Attributes.Name)
+		lib[playlist.Attributes.Name] = make(map[string]song_info)
+		tracks, err := client.Me.GetLibraryPlaylistCatalogTracks(ctx, playlist.Id, 250)
+		if err != nil {
+			log.Println(tracks, err)
+		}
+		for _, track := range tracks {
+			// fmt.Println(track.Attributes.Name)
+			// fmt.Println(track.Attributes.ArtistName)
+			song := song_info{name: track.Attributes.Name, artist: track.Attributes.ArtistName}
+			fmt.Println(song)
+			lib[playlist.Attributes.Name][track.Attributes.Name] = song
+		}
+		// break
+	}
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
@@ -113,20 +132,22 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	spotifyUserId := os.Getenv("spotifyUserId")
-	spotifyClientId := os.Getenv("SpotifyClientId")
-	spotifyClientSecret := os.Getenv("SpotifyClientSecret")
+	// spotifyUserId := os.Getenv("spotifyUserId")
+	// spotifyClientId := os.Getenv("SpotifyClientId")
+	// spotifyClientSecret := os.Getenv("SpotifyClientSecret")
 
-	libSpotify := GetSpotifyData(spotifyUserId, spotifyClientId, spotifyClientSecret)
-	for id, _ := range libSpotify {
-		fmt.Println(id)
-	}
-	// devToken := os.Getenv("AppleMusicDevToken")
-	// userToken := "work in progress,  needs to be piped in using user auth"
-
-	// libApple := GetAppleMusicData(userToken, devToken)
-	// for id, _ := range libApple {
+	// libSpotify := GetSpotifyData(spotifyUserId, spotifyClientId, spotifyClientSecret)
+	// for id, _ := range libSpotify {
 	// 	fmt.Println(id)
 	// }
+	devToken := os.Getenv("AppleMusicDevToken")
+	userToken := os.Getenv("AppleMusicUserToken")
+
+	libApple := GetAppleMusicData(userToken, devToken)
+	keys := make([]string, 0, len(libApple))
+	for k, _ := range libApple {
+		keys = append(keys, k)
+	}
+	fmt.Println(keys)
 
 }
